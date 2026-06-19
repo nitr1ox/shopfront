@@ -777,88 +777,219 @@
       background: var(--accent);
       color: #fff;
     }
-  </style>
-</head>
-<body>
-
   
+
+    /* ── NOUVEAU : durées & prix par durée ────── */
+    .durations-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem;
+      margin-top: 0.5rem;
+    }
+    .duration-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 0.5rem 0.75rem;
+      transition: border-color 0.15s;
+    }
+    .duration-row.enabled { border-color: var(--accent); }
+    .duration-row label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex: 1;
+    }
+    .duration-row input[type=checkbox] { accent-color: var(--accent); width:14px; height:14px; }
+    .duration-row input[type=number] {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border2);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      width: 80px;
+      padding: 0.1rem 0.25rem;
+      text-align: right;
+      outline: none;
+    }
+    .duration-row input[type=number]:disabled { opacity:0.3; }
+    .duration-row .eur { font-size: 0.7rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+    /* ── KEYS section ── */
+    .keys-section {
+      margin-top: 0.5rem;
+    }
+    .keys-duration-block {
+      margin-bottom: 0.75rem;
+    }
+    .keys-duration-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    .keys-list { display: flex; flex-direction: column; gap: 0.3rem; }
+    .key-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .key-row input[type=text] {
+      flex: 1;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+    }
+
+    /* ── LOGO preview ── */
+    .logo-preview {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      object-fit: contain;
+      display: none;
+    }
+    .logo-row { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* ── TABLE col updates ── */
+    .td-logo { width: 40px; }
+    .td-logo img { width:32px; height:32px; border-radius:4px; object-fit:contain; }
+    .td-durations { font-size: 0.72rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+
+    /* ── Keys view ── */
+    .keys-table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+    .keys-table-label { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between; }
+    .keys-table-label span { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .key-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem;
+    }
+    .key-item:last-child { border-bottom: none; }
+    .key-item .key-val { color: var(--text); flex: 1; }
+    .key-item .key-product { color: var(--muted); font-size: 0.68rem; margin-right: 1rem; }
+    .key-item .key-duration-badge {
+      background: var(--accent-dim);
+      color: var(--accent);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      font-size: 0.65rem;
+      margin-right: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+    .no-keys { padding: 2rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
+
+    /* scrollable modal */
+    .modal { max-height: 90vh; overflow-y: auto; }
+
+  </style>
+</head><body>
+
+  <!-- SIDEBAR -->
   <aside class="sidebar">
     <a class="sidebar-logo" href="#">
-      <span>AK</span>-47 <div class="sidebar-badge">Admin</div>
+      AK<span>-47</span>
+      <span class="sidebar-badge">Admin</span>
     </a>
     <nav class="sidebar-nav">
-      <div class="nav-section-label">Gestion</div>
+      <div class="nav-section-label">Catalogue</div>
       <div class="nav-item active" data-view="products" onclick="switchView('products', this)">
-        <span class="icon">⬡</span> Produits
+        <span class="icon">⬡</span> Scripts
       </div>
+      <div class="nav-item" data-view="keys" onclick="switchView('keys', this)">
+        <span class="icon">⌗</span> Clés
+      </div>
+      <div class="nav-section-label">Rendu</div>
       <div class="nav-item" data-view="preview" onclick="switchView('preview', this)">
         <span class="icon">◎</span> Aperçu shop
       </div>
     </nav>
-    <div class="sidebar-footer">nitrox · ak-47.fr</div>
+    <div class="sidebar-footer">v3 — ltc-secured</div>
   </aside>
 
-  
+  <!-- MAIN -->
   <div class="main">
-
-    
-    <header class="topbar">
-      <div class="topbar-title" id="topbar-title">Produits <span>/ Gérer les offres</span></div>
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Scripts <span>/ Gérer les offres</span></div>
       <div class="topbar-right">
         <div class="topbar-user">
-          <div class="user-avatar">N</div>
-          nitrox
+          <div class="user-avatar">A</div>
+          Admin
         </div>
       </div>
-    </header>
+    </div>
 
-    
     <div class="content">
 
-      
+      <!-- VUE SCRIPTS -->
       <div class="view active" id="view-products">
         <div class="page-header">
           <div>
             <div class="page-label">Catalogue</div>
-            <h1 class="page-title">Mes <em>produits</em></h1>
+            <h1 class="page-title">Mes <em>scripts</em></h1>
           </div>
-          <button class="btn btn-primary" onclick="openModal()">+ Nouveau produit</button>
+          <button class="btn btn-primary" onclick="openModal()">+ Nouveau script</button>
         </div>
 
-        
-        <div class="stats-grid" id="stats-grid">
-          
-        </div>
+        <div class="stats-grid" id="stats-grid"></div>
 
-        
         <div class="table-wrap">
           <div class="table-header">
-            <div class="table-header-title">Tous les produits</div>
+            <div class="table-header-title">Tous les scripts</div>
           </div>
           <table>
             <thead>
               <tr>
+                <th class="td-logo"></th>
                 <th>Nom</th>
-                <th>Prix</th>
-                <th>Durée</th>
+                <th>Description</th>
+                <th>Durées actives</th>
                 <th>Statut</th>
                 <th>Featured</th>
                 <th></th>
               </tr>
             </thead>
-            <tbody id="products-tbody">
-              
-            </tbody>
+            <tbody id="products-tbody"></tbody>
           </table>
           <div id="empty-state" class="empty-state" style="display:none;">
             <div class="empty-icon">⬡</div>
-            <p>Aucun produit pour l'instant.</p>
-            <button class="btn btn-primary" onclick="openModal()">+ Créer un produit</button>
+            <p>Aucun script pour l'instant.</p>
+            <button class="btn btn-primary" onclick="openModal()">+ Créer un script</button>
           </div>
         </div>
       </div>
 
-      
+      <!-- VUE CLÉS -->
+      <div class="view" id="view-keys">
+        <div class="page-header">
+          <div>
+            <div class="page-label">Licences</div>
+            <h1 class="page-title">Clés <em>d'accès</em></h1>
+          </div>
+        </div>
+        <div id="keys-view-content">
+          <p style="color:var(--muted);font-size:0.85rem;">Crée des scripts avec des clés pour les voir ici.</p>
+        </div>
+      </div>
+
+      <!-- VUE APERÇU -->
       <div class="view" id="view-preview">
         <div class="page-header">
           <div>
@@ -868,12 +999,10 @@
         </div>
         <div class="preview-section">
           <div class="preview-label">— Rendu des cartes telles qu'elles apparaissent sur le shop</div>
-          <div class="preview-grid" id="preview-grid">
-            
-          </div>
+          <div class="preview-grid" id="preview-grid"></div>
           <div id="preview-empty" class="empty-state" style="display:none;">
             <div class="empty-icon">◎</div>
-            <p>Crée des produits pour voir l'aperçu.</p>
+            <p>Crée des scripts pour voir l'aperçu.</p>
           </div>
         </div>
       </div>
@@ -881,28 +1010,20 @@
     </div>
   </div>
 
-  
+  <!-- MODAL PRODUIT -->
   <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
     <div class="modal">
       <div class="modal-head">
-        <div class="modal-title" id="modal-title">Nouveau produit</div>
+        <div class="modal-title" id="modal-title">Nouveau script</div>
         <button class="modal-close" onclick="closeModal()">✕</button>
       </div>
       <div class="modal-body">
+
+        <!-- NOM + STATUT -->
         <div class="form-row">
           <div class="form-group">
-            <label>Nom</label>
-            <input type="text" id="f-name" placeholder="ex: 1 Mois" />
-          </div>
-          <div class="form-group">
-            <label>Durée</label>
-            <input type="text" id="f-duration" placeholder="ex: 30 jours" />
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Prix (€)</label>
-            <input type="number" id="f-price" placeholder="0.00" min="0" step="0.01" />
+            <label>Nom du script</label>
+            <input type="text" id="f-name" placeholder="ex: Anti-Cheat FiveM" />
           </div>
           <div class="form-group">
             <label>Statut</label>
@@ -913,14 +1034,45 @@
           </div>
         </div>
 
+        <!-- DESCRIPTION -->
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="f-description" placeholder="ex: Protection avancée contre les cheats FiveM" />
+        </div>
+
+        <!-- LOGO -->
+        <div class="form-group">
+          <label>Logo (URL)</label>
+          <div class="logo-row">
+            <input type="text" id="f-logo" placeholder="https://..." oninput="previewLogo(this.value)" style="flex:1;" />
+            <img id="logo-preview-img" class="logo-preview" src="" alt="logo" />
+          </div>
+        </div>
+
+        <!-- DURÉES & PRIX -->
+        <div class="form-group">
+          <label>Durées disponibles & prix (€)</label>
+          <div class="durations-grid" id="durations-grid">
+            <!-- généré par JS -->
+          </div>
+        </div>
+
+        <!-- FEATURES -->
         <div class="form-group">
           <label>Fonctionnalités</label>
-          <div class="features-list" id="features-list">
-            
-          </div>
+          <div class="features-list" id="features-list"></div>
           <button class="btn btn-ghost btn-sm" style="margin-top:0.5rem;" onclick="addFeatureRow()">+ Ajouter</button>
         </div>
 
+        <!-- CLÉS PAR DURÉE -->
+        <div class="form-group">
+          <label>Clés d'accès <span style="color:var(--muted);font-size:0.73rem;">(par durée activée)</span></label>
+          <div class="keys-section" id="keys-section">
+            <p style="color:var(--muted);font-size:0.8rem;">Active au moins une durée pour ajouter des clés.</p>
+          </div>
+        </div>
+
+        <!-- FEATURED -->
         <div class="form-group">
           <div class="toggle-row">
             <span class="toggle-label">Mise en avant <span style="color:var(--muted);font-size:0.75rem;">(badge Populaire)</span></span>
@@ -930,6 +1082,7 @@
             </label>
           </div>
         </div>
+
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
@@ -938,13 +1091,13 @@
     </div>
   </div>
 
-  
+  <!-- CONFIRM DELETE -->
   <div class="modal-overlay" id="confirm-overlay" onclick="closeConfirmOnOverlay(event)">
     <div class="modal" style="max-width:380px;">
       <div class="modal-body" style="padding-top:2rem;">
         <div class="confirm-icon">🗑</div>
-        <div class="confirm-title">Supprimer ce produit ?</div>
-        <p class="confirm-text">Cette action est irréversible. Le produit sera retiré du catalogue.</p>
+        <div class="confirm-title">Supprimer ce script ?</div>
+        <p class="confirm-text">Cette action est irréversible. Le script sera retiré du catalogue.</p>
       </div>
       <div class="modal-footer">
         <button class="btn btn-ghost" onclick="closeConfirm()">Annuler</button>
@@ -953,14 +1106,22 @@
     </div>
   </div>
 
-  
   <div class="toast-container" id="toast-container"></div>
 
   <script>
-    
+    // ─── CONSTANTES DURÉES ───────────────────────────────────────
+    const DURATIONS = [
+      { id: '1j',       label: '1 Jour' },
+      { id: '1s',       label: '1 Semaine' },
+      { id: '1m',       label: '1 Mois' },
+      { id: '3m',       label: '3 Mois' },
+      { id: 'lifetime', label: 'Lifetime' },
+    ];
+
+    // ─── STATE ───────────────────────────────────────────────────
     let products = JSON.parse(localStorage.getItem('ak47_products') || '[]');
     let editingId = null;
-    let deleteId = null;
+    let deleteId  = null;
 
     function save() {
       localStorage.setItem('ak47_products', JSON.stringify(products));
@@ -970,10 +1131,11 @@
       return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     }
 
-    
+    // ─── NAVIGATION ──────────────────────────────────────────────
     const topbarTitles = {
-      products: 'Produits <span>/ Gérer les offres</span>',
-      preview: 'Aperçu <span>/ Rendu shop</span>',
+      products: 'Scripts <span>/ Gérer les offres</span>',
+      keys:     'Clés <span>/ Licences d\'accès</span>',
+      preview:  'Aperçu <span>/ Rendu shop</span>',
     };
 
     function switchView(id, el) {
@@ -983,9 +1145,10 @@
       el.classList.add('active');
       document.getElementById('topbar-title').innerHTML = topbarTitles[id];
       if (id === 'preview') renderPreview();
+      if (id === 'keys')    renderKeysView();
     }
 
-    
+    // ─── TABLE PRODUITS ──────────────────────────────────────────
     function renderTable() {
       const tbody = document.getElementById('products-tbody');
       const empty = document.getElementById('empty-state');
@@ -996,11 +1159,20 @@
         empty.style.display = 'block';
       } else {
         empty.style.display = 'none';
-        tbody.innerHTML = products.map(p => `
+        tbody.innerHTML = products.map(p => {
+          const activeDurs = DURATIONS.filter(d => p.prices && p.prices[d.id] !== undefined);
+          const dursHtml = activeDurs.length
+            ? activeDurs.map(d => `<span style="display:inline-block;margin:0 2px 2px 0;background:var(--accent-dim);color:var(--accent);padding:0.1rem 0.35rem;border-radius:3px;font-size:0.65rem;">${d.label} <b style="color:var(--text);">€${Number(p.prices[d.id]).toFixed(2)}</b></span>`).join('')
+            : '<span style="color:var(--muted2)">—</span>';
+          const logoHtml = p.logo
+            ? `<img src="${esc(p.logo)}" style="width:32px;height:32px;border-radius:4px;object-fit:contain;" onerror="this.style.display='none'" />`
+            : '<span style="color:var(--muted2);font-size:1.2rem;">⬡</span>';
+          return `
           <tr>
+            <td class="td-logo">${logoHtml}</td>
             <td class="td-name">${esc(p.name)}</td>
-            <td class="td-price"><sup>€</sup>${Number(p.price).toFixed(2)}</td>
-            <td style="color:var(--muted);font-size:0.82rem;">${esc(p.duration)}</td>
+            <td style="color:var(--muted);font-size:0.8rem;max-width:200px;">${esc(p.description || '')}</td>
+            <td class="td-durations">${dursHtml}</td>
             <td>
               <span class="badge ${p.status === 'active' ? 'badge-active' : 'badge-hidden'}">
                 ${p.status === 'active' ? '● Actif' : '○ Masqué'}
@@ -1015,15 +1187,20 @@
                 <button class="btn btn-danger btn-sm" onclick="openConfirm('${p.id}')">✕</button>
               </div>
             </td>
-          </tr>
-        `).join('');
+          </tr>`;
+        }).join('');
       }
 
-      const total = products.reduce((a, p) => a + Number(p.price), 0);
+      const totalKeys = products.reduce((a, p) => {
+        let n = 0;
+        DURATIONS.forEach(d => { if (p.keys && p.keys[d.id]) n += p.keys[d.id].length; });
+        return a + n;
+      }, 0);
       const active = products.filter(p => p.status === 'active').length;
+
       stats.innerHTML = `
         <div class="stat-card">
-          <div class="stat-label">Total produits</div>
+          <div class="stat-label">Total scripts</div>
           <div class="stat-value">${products.length}</div>
         </div>
         <div class="stat-card">
@@ -1031,20 +1208,53 @@
           <div class="stat-value accent">${active}</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Valeur catalogue</div>
-          <div class="stat-value">€${total.toFixed(2)}</div>
-          <div class="stat-sub">somme des prix</div>
+          <div class="stat-label">Total clés</div>
+          <div class="stat-value">${totalKeys}</div>
+          <div class="stat-sub">toutes durées</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Featured</div>
           <div class="stat-value">${products.filter(p => p.featured).length}</div>
-        </div>
-      `;
+        </div>`;
     }
 
-    
+    // ─── VUE CLÉS ────────────────────────────────────────────────
+    function renderKeysView() {
+      const container = document.getElementById('keys-view-content');
+      let html = '';
+      let anyKey = false;
+
+      products.forEach(p => {
+        DURATIONS.forEach(d => {
+          const keys = (p.keys && p.keys[d.id]) || [];
+          if (keys.length === 0) return;
+          anyKey = true;
+          html += `
+          <div class="keys-table-wrap">
+            <div class="keys-table-label">
+              ${esc(p.name)}
+              <span>${d.label}</span>
+            </div>
+            ${keys.map(k => `
+            <div class="key-item">
+              <span class="key-val">${esc(k)}</span>
+              <span class="key-duration-badge">${d.label}</span>
+              <button class="btn btn-ghost btn-sm" onclick="copyKey('${esc(k)}')">Copier</button>
+            </div>`).join('')}
+          </div>`;
+        });
+      });
+
+      container.innerHTML = anyKey ? html : '<p style="color:var(--muted);font-size:0.85rem;">Aucune clé enregistrée. Édite un script pour en ajouter.</p>';
+    }
+
+    function copyKey(val) {
+      navigator.clipboard.writeText(val).then(() => toast('Clé copiée ✓', 'success'));
+    }
+
+    // ─── APERÇU ──────────────────────────────────────────────────
     function renderPreview() {
-      const grid = document.getElementById('preview-grid');
+      const grid  = document.getElementById('preview-grid');
       const empty = document.getElementById('preview-empty');
       const visible = products.filter(p => p.status === 'active');
 
@@ -1053,49 +1263,165 @@
         empty.style.display = 'block';
         return;
       }
-
       empty.style.display = 'none';
-      grid.innerHTML = visible.map(p => `
+
+      grid.innerHTML = visible.map(p => {
+        const activeDurs = DURATIONS.filter(d => p.prices && p.prices[d.id] !== undefined);
+        const firstDur   = activeDurs[0];
+        const logoHtml   = p.logo ? `<img src="${esc(p.logo)}" style="width:48px;height:48px;border-radius:8px;object-fit:contain;margin-bottom:0.75rem;" onerror="this.style.display='none'" />` : '';
+        const durTabs    = activeDurs.length > 1
+          ? `<div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.75rem;">${activeDurs.map((d,i) => `<span style="font-family:monospace;font-size:0.65rem;padding:0.2rem 0.5rem;border-radius:3px;border:1px solid ${i===0?'var(--accent)':'var(--border2)'};color:${i===0?'var(--accent)':'var(--muted)'};cursor:default;">${d.label}</span>`).join('')}</div>` : '';
+
+        return `
         <div class="preview-card ${p.featured ? 'featured' : ''}">
           ${p.featured ? '<div class="pc-badge">Populaire</div>' : ''}
-          <div class="pc-duration">${esc(p.duration)}</div>
+          ${logoHtml}
           <div class="pc-name">${esc(p.name)}</div>
-          <div class="pc-price"><sup>€</sup>${Number(p.price).toFixed(2)}</div>
+          ${p.description ? `<div style="font-size:0.77rem;color:var(--muted);margin-bottom:0.75rem;">${esc(p.description)}</div>` : ''}
+          ${durTabs}
+          <div class="pc-duration">${firstDur ? firstDur.label : '—'}</div>
+          <div class="pc-price">${firstDur ? `<sup>€</sup>${Number(p.prices[firstDur.id]).toFixed(2)}` : '—'}</div>
           <ul class="pc-features">
             ${(p.features || []).map(f => f ? `<li>${esc(f)}</li>` : '').join('')}
           </ul>
           <button class="pc-btn">Acheter</button>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
-    
+    // ─── MODAL ───────────────────────────────────────────────────
+    function buildDurationsGrid(prices) {
+      const grid = document.getElementById('durations-grid');
+      grid.innerHTML = DURATIONS.map(d => {
+        const isEnabled = prices && prices[d.id] !== undefined;
+        const price     = isEnabled ? prices[d.id] : '';
+        return `
+        <div class="duration-row ${isEnabled ? 'enabled' : ''}" id="dur-row-${d.id}">
+          <label>
+            <input type="checkbox" id="dur-chk-${d.id}" ${isEnabled ? 'checked' : ''}
+              onchange="toggleDuration('${d.id}', this.checked)" />
+            ${d.label}
+          </label>
+          <input type="number" id="dur-price-${d.id}" min="0" step="0.01" placeholder="0.00"
+            value="${price}" ${isEnabled ? '' : 'disabled'} />
+          <span class="eur">€</span>
+        </div>`;
+      }).join('');
+      refreshKeysSectionInModal(prices && Object.fromEntries(DURATIONS.filter(d => prices[d.id] !== undefined).map(d => [d.id, true])) || {});
+    }
+
+    function toggleDuration(durId, enabled) {
+      const row   = document.getElementById('dur-row-' + durId);
+      const input = document.getElementById('dur-price-' + durId);
+      row.classList.toggle('enabled', enabled);
+      input.disabled = !enabled;
+      if (!enabled) input.value = '';
+      refreshKeysSectionInModal(getEnabledDurMap());
+    }
+
+    function getEnabledDurMap() {
+      const map = {};
+      DURATIONS.forEach(d => { if (document.getElementById('dur-chk-' + d.id).checked) map[d.id] = true; });
+      return map;
+    }
+
+    function refreshKeysSectionInModal(enabledMap, existingKeys) {
+      const sec = document.getElementById('keys-section');
+      const enabled = DURATIONS.filter(d => enabledMap[d.id]);
+      if (enabled.length === 0) {
+        sec.innerHTML = '<p style="color:var(--muted);font-size:0.8rem;">Active au moins une durée pour ajouter des clés.</p>';
+        return;
+      }
+      sec.innerHTML = enabled.map(d => {
+        const keys = (existingKeys && existingKeys[d.id]) || [];
+        const rows = keys.length ? keys : [''];
+        return `
+        <div class="keys-duration-block" id="keys-block-${d.id}">
+          <div class="keys-duration-label">${d.label}</div>
+          <div class="keys-list" id="keys-list-${d.id}">
+            ${rows.map(k => makeKeyRow(k)).join('')}
+          </div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:0.3rem;" onclick="addKeyRow('${d.id}')">+ Clé</button>
+        </div>`;
+      }).join('');
+    }
+
+    function makeKeyRow(val) {
+      return `<div class="key-row">
+        <input type="text" placeholder="XXXX-XXXX-XXXX" value="${esc(val)}" />
+        <button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" title="Supprimer">✕</button>
+      </div>`;
+    }
+
+    function addKeyRow(durId) {
+      const list = document.getElementById('keys-list-' + durId);
+      if (list) { const d = document.createElement('div'); d.innerHTML = makeKeyRow(''); list.appendChild(d.firstElementChild); }
+    }
+
+    function getKeys() {
+      const result = {};
+      DURATIONS.forEach(d => {
+        const list = document.getElementById('keys-list-' + d.id);
+        if (!list) return;
+        const vals = Array.from(list.querySelectorAll('input[type=text]')).map(i => i.value.trim()).filter(Boolean);
+        if (vals.length) result[d.id] = vals;
+      });
+      return result;
+    }
+
+    function getPrices() {
+      const result = {};
+      DURATIONS.forEach(d => {
+        const chk = document.getElementById('dur-chk-' + d.id);
+        const inp = document.getElementById('dur-price-' + d.id);
+        if (chk && chk.checked && inp && inp.value !== '') {
+          result[d.id] = Number(inp.value);
+        }
+      });
+      return result;
+    }
+
+    function previewLogo(url) {
+      const img = document.getElementById('logo-preview-img');
+      if (url) { img.src = url; img.style.display = 'block'; }
+      else      { img.style.display = 'none'; }
+    }
+
     function openModal(id) {
       editingId = id || null;
       const overlay = document.getElementById('modal-overlay');
-      const title = document.getElementById('modal-title');
+      const title   = document.getElementById('modal-title');
       const saveBtn = document.getElementById('modal-save-btn');
 
       if (id) {
         const p = products.find(x => x.id === id);
         if (!p) return;
-        title.textContent = 'Modifier le produit';
+        title.textContent = 'Modifier le script';
         saveBtn.textContent = 'Enregistrer';
-        document.getElementById('f-name').value = p.name;
-        document.getElementById('f-duration').value = p.duration;
-        document.getElementById('f-price').value = p.price;
-        document.getElementById('f-status').value = p.status;
-        document.getElementById('f-featured').checked = p.featured;
+        document.getElementById('f-name').value        = p.name;
+        document.getElementById('f-description').value = p.description || '';
+        document.getElementById('f-logo').value        = p.logo || '';
+        document.getElementById('f-status').value      = p.status;
+        document.getElementById('f-featured').checked  = p.featured;
+        previewLogo(p.logo || '');
+        buildDurationsGrid(p.prices || {});
         buildFeatureRows(p.features || []);
+        // inject existing keys
+        setTimeout(() => refreshKeysSectionInModal(
+          Object.fromEntries(DURATIONS.filter(d => p.prices && p.prices[d.id] !== undefined).map(d => [d.id, true])),
+          p.keys || {}
+        ), 0);
       } else {
-        title.textContent = 'Nouveau produit';
+        title.textContent = 'Nouveau script';
         saveBtn.textContent = 'Créer';
-        document.getElementById('f-name').value = '';
-        document.getElementById('f-duration').value = '';
-        document.getElementById('f-price').value = '';
-        document.getElementById('f-status').value = 'active';
-        document.getElementById('f-featured').checked = false;
-        buildFeatureRows(['', '', '']);
+        document.getElementById('f-name').value        = '';
+        document.getElementById('f-description').value = '';
+        document.getElementById('f-logo').value        = '';
+        document.getElementById('f-status').value      = 'active';
+        document.getElementById('f-featured').checked  = false;
+        previewLogo('');
+        buildDurationsGrid({});
+        buildFeatureRows(['', '']);
       }
 
       overlay.classList.add('open');
@@ -1110,6 +1436,7 @@
       if (e.target === document.getElementById('modal-overlay')) closeModal();
     }
 
+    // ─── FEATURES ────────────────────────────────────────────────
     function buildFeatureRows(features) {
       const list = document.getElementById('features-list');
       list.innerHTML = '';
@@ -1118,43 +1445,42 @@
 
     function addFeatureRow(value = '') {
       const list = document.getElementById('features-list');
-      const row = document.createElement('div');
+      const row  = document.createElement('div');
       row.className = 'feature-row';
       row.innerHTML = `
-        <input type="text" placeholder="ex: Accès complet" value="${esc(value)}" />
-        <button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" title="Retirer">✕</button>
-      `;
+        <input type="text" placeholder="ex: Protection ESP, Aimbot, Lua Executor…" value="${esc(value)}" />
+        <button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" title="Retirer">✕</button>`;
       list.appendChild(row);
     }
 
     function getFeatures() {
       return Array.from(document.querySelectorAll('#features-list .feature-row input'))
-        .map(i => i.value.trim())
-        .filter(Boolean);
+        .map(i => i.value.trim()).filter(Boolean);
     }
 
+    // ─── SAVE ────────────────────────────────────────────────────
     function saveProduct() {
-      const name = document.getElementById('f-name').value.trim();
-      const price = document.getElementById('f-price').value;
-      const duration = document.getElementById('f-duration').value.trim();
-      const status = document.getElementById('f-status').value;
-      const featured = document.getElementById('f-featured').checked;
-      const features = getFeatures();
+      const name        = document.getElementById('f-name').value.trim();
+      const description = document.getElementById('f-description').value.trim();
+      const logo        = document.getElementById('f-logo').value.trim();
+      const status      = document.getElementById('f-status').value;
+      const featured    = document.getElementById('f-featured').checked;
+      const features    = getFeatures();
+      const prices      = getPrices();
+      const keys        = getKeys();
 
-      if (!name || price === '') {
-        toast('Nom et prix requis.', 'error');
-        return;
-      }
+      if (!name) { toast('Nom requis.', 'error'); return; }
+      if (Object.keys(prices).length === 0) { toast('Active au moins une durée avec un prix.', 'error'); return; }
 
       if (editingId) {
         const idx = products.findIndex(p => p.id === editingId);
         if (idx !== -1) {
-          products[idx] = { ...products[idx], name, price: Number(price), duration, status, featured, features };
+          products[idx] = { ...products[idx], name, description, logo, prices, keys, status, featured, features };
         }
-        toast('Produit mis à jour ✓', 'success');
+        toast('Script mis à jour ✓', 'success');
       } else {
-        products.push({ id: genId(), name, price: Number(price), duration, status, featured, features });
-        toast('Produit créé ✓', 'success');
+        products.push({ id: genId(), name, description, logo, prices, keys, status, featured, features });
+        toast('Script créé ✓', 'success');
       }
 
       save();
@@ -1162,7 +1488,7 @@
       closeModal();
     }
 
-    
+    // ─── DELETE ──────────────────────────────────────────────────
     function openConfirm(id) {
       deleteId = id;
       document.getElementById('confirm-overlay').classList.add('open');
@@ -1182,29 +1508,26 @@
       save();
       renderTable();
       closeConfirm();
-      toast('Produit supprimé.', 'error');
+      toast('Script supprimé.', 'error');
     }
 
-    
+    // ─── TOAST ───────────────────────────────────────────────────
     function toast(msg, type = 'success') {
       const c = document.getElementById('toast-container');
       const t = document.createElement('div');
       t.className = `toast ${type}`;
       t.innerHTML = (type === 'success' ? '✓' : '✕') + ' ' + msg;
       c.appendChild(t);
-      requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
-      setTimeout(() => {
-        t.classList.remove('show');
-        setTimeout(() => t.remove(), 300);
-      }, 2800);
+      requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add('show')));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 2800);
     }
 
-    
+    // ─── UTILS ───────────────────────────────────────────────────
     function esc(str) {
-      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+      return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
-    // ─── INIT ─────────────────────────────────────────────────────
+    // ─── INIT ────────────────────────────────────────────────────
     renderTable();
   </script>
 </body>
