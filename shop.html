@@ -722,13 +722,37 @@
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erreur PayPal.');
 
-        // Ici tu peux soit rediriger vers l'URL d'approbation PayPal renvoyée par l'API,
-        // soit afficher les boutons PayPal JS SDK avec l'order id (data.id).
-        // Exemple simple : on affiche l'id en attendant l'intégration des boutons PayPal.
-        content.innerHTML = `
-          <p class="checkout-status">Commande PayPal créée (#${esc(data.id)}).</p>
-          <p class="checkout-sub">Intègre ici les boutons PayPal JS SDK pour finaliser l'approbation, puis appelle <code>/api/payments/capture-order/${esc(data.id)}</code>.</p>
-        `;
+        const orderId = data.id;
+        content.innerHTML = '<p class="checkout-status">Confirme le paiement via PayPal :</p><div id="paypal-button-container" style="margin-top:1rem;"></div>';
+
+        if (!document.getElementById('paypal-sdk')) {
+          const script = document.createElement('script');
+          script.id = 'paypal-sdk';
+          script.src = 'https://www.paypal.com/sdk/js?client-id=' + data.paypalClientId + '&currency=EUR';
+          document.head.appendChild(script);
+          await new Promise(r => { script.onload = r; });
+        }
+
+        paypal.Buttons({
+          createOrder: () => orderId,
+          onApprove: async () => {
+            content.innerHTML = '<p class="checkout-status">Validation du paiement…</p>';
+            try {
+              const capture = await fetch(API_BASE + '/payments/capture-order/' + orderId, { method: 'POST' });
+              const result = await capture.json();
+              if (!capture.ok) throw new Error(result.error || 'Erreur capture.');
+              content.innerHTML = '<p class="checkout-status" style="color:#4ade80;">✓ Paiement confirmé ! Vérifie ton email pour ta clé d’accès.</p>';
+            } catch (err) {
+              content.innerHTML = '<p class="checkout-error">' + esc(err.message) + '</p>';
+            }
+          },
+          onError: (err) => {
+            content.innerHTML = '<p class="checkout-error">Erreur PayPal : ' + esc(String(err)) + '</p>';
+          },
+          onCancel: () => {
+            content.innerHTML = '<p class="checkout-error">Paiement annulé.</p>';
+          }
+        }).render('#paypal-button-container');
       } catch (err) {
         content.innerHTML = `<p class="checkout-error">${esc(err.message)}</p>`;
       }
