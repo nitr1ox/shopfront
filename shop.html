@@ -278,6 +278,52 @@
       margin-bottom: 0.75rem;
     }
 
+    .product-image {
+      width: 100%;
+      height: 140px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      object-fit: contain;
+      margin-bottom: 1.25rem;
+      display: block;
+    }
+
+    .product-image-placeholder {
+      width: 100%;
+      height: 140px;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 1.6rem;
+    }
+
+    .product-desc {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .product-price-range {
+      font-size: 0.72rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    .product-price-range strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
     .product-name {
       font-size: 1.4rem;
       font-weight: 700;
@@ -295,6 +341,13 @@
     .product-price sup {
       font-size: 1rem;
       vertical-align: super;
+    }
+
+    .product-price small {
+      font-size: 0.9rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-left: 0.3rem;
     }
 
     .product-features {
@@ -416,6 +469,46 @@
       color: var(--muted);
       font-size: 0.9rem;
       margin-bottom: 1.5rem;
+    }
+
+    .offer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+
+    .offer-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .offer-option:hover { border-color: rgba(230,60,47,0.4); }
+
+    .offer-option.selected {
+      border-color: var(--accent);
+      background: rgba(230,60,47,0.08);
+    }
+
+    .offer-option-label {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .offer-option-price {
+      font-family: 'Space Mono', monospace;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 0.95rem;
     }
 
     .checkout-label {
@@ -606,8 +699,21 @@
   <script>
     const API_BASE = 'https://shopback-a9ls.onrender.com/api';
 
+    const DURATION_LABELS = {
+      '1j': '1 Jour',
+      '1s': '1 Semaine',
+      '1m': '1 Mois',
+      '3m': '3 Mois',
+      'lifetime': 'Lifetime',
+    };
+    const DURATION_ORDER = ['1j', '1s', '1m', '3m', 'lifetime'];
+
     function esc(str) {
       return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function fmt(n) {
+      return Number(n).toFixed(2);
     }
 
     let currentProducts = [];
@@ -616,6 +722,13 @@
       const res = await fetch(`${API_BASE}/products`);
       if (!res.ok) throw new Error('Erreur lors du chargement des produits.');
       return res.json();
+    }
+
+    function sortedOffers(product) {
+      const prices = product.prices || {};
+      return DURATION_ORDER
+        .filter(d => prices[d] !== undefined)
+        .map(d => ({ id: d, label: DURATION_LABELS[d] || d, price: Number(prices[d]) }));
     }
 
     async function renderShop() {
@@ -641,18 +754,35 @@
       grid.style.display = '';
       empty.style.display = 'none';
 
-      grid.innerHTML = currentProducts.map(p => `
+      grid.innerHTML = currentProducts.map(p => {
+        const offers = sortedOffers(p);
+        const min = p.min !== undefined ? Number(p.min) : (offers[0] ? offers[0].price : 0);
+        const max = p.max !== undefined ? Number(p.max) : (offers[offers.length - 1] ? offers[offers.length - 1].price : 0);
+        const sameRange = min === max;
+
+        const imageBlock = p.logo
+          ? `<img class="product-image" src="${esc(p.logo)}" alt="${esc(p.name)}" loading="lazy" />`
+          : `<div class="product-image-placeholder">📦</div>`;
+
+        return `
         <div class="product-card ${p.featured ? 'featured' : ''}">
           ${p.featured ? '<div class="product-badge">Populaire</div>' : ''}
-          <div class="product-duration">${esc(p.duration)}</div>
+          ${imageBlock}
           <div class="product-name">${esc(p.name)}</div>
-          <div class="product-price"><sup>€</sup>${Number(p.price).toFixed(2)}</div>
+          ${p.description ? `<div class="product-desc">${esc(p.description)}</div>` : ''}
+          <div class="product-price-range">
+            ${sameRange
+              ? `Prix : <strong>€${fmt(min)}</strong>`
+              : `À partir de <strong>€${fmt(min)}</strong> jusqu'à <strong>€${fmt(max)}</strong>`}
+          </div>
+          <div class="product-price"><sup>€</sup>${fmt(min)}<small>${sameRange ? '' : '+'}</small></div>
           <ul class="product-features">
             ${(p.features || []).map(f => f ? `<li>${esc(f)}</li>` : '').join('')}
           </ul>
-          <button class="product-btn" data-id="${p.id}">Acheter</button>
+          <button class="product-btn" data-id="${p.id}">Choisir une offre</button>
         </div>
-      `).join('');
+      `;
+      }).join('');
 
       grid.querySelectorAll('.product-btn').forEach(btn => {
         btn.addEventListener('click', () => openCheckout(btn.dataset.id));
@@ -664,9 +794,12 @@
     const content = document.getElementById('checkout-content');
     let pollTimer = null;
 
+    let selectedOffer = null;
+
     function closeCheckout() {
       overlay.classList.remove('open');
       if (pollTimer) clearInterval(pollTimer);
+      selectedOffer = null;
     }
     document.getElementById('checkout-close').addEventListener('click', closeCheckout);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCheckout(); });
@@ -676,9 +809,51 @@
       if (!product) return;
       if (pollTimer) clearInterval(pollTimer);
 
+      const offers = sortedOffers(product);
+      selectedOffer = offers[0] || null;
+
+      renderOfferStep(product, offers);
+      overlay.classList.add('open');
+    }
+
+    function renderOfferStep(product, offers) {
+      const imageBlock = product.logo
+        ? `<img class="product-image" src="${esc(product.logo)}" alt="${esc(product.name)}" style="margin-bottom:1rem;" />`
+        : '';
+
+      content.innerHTML = `
+        ${imageBlock}
+        <h3>${esc(product.name)}</h3>
+        <p class="checkout-price">Choisis ton offre</p>
+        <div class="offer-list" id="offer-list">
+          ${offers.map(o => `
+            <div class="offer-option ${selectedOffer && selectedOffer.id === o.id ? 'selected' : ''}" data-id="${o.id}">
+              <span class="offer-option-label">${esc(o.label)}</span>
+              <span class="offer-option-price">€${fmt(o.price)}</span>
+            </div>
+          `).join('')}
+        </div>
+        <button class="btn-primary" id="offer-continue" style="width:100%; border:none; cursor:pointer; text-align:center;">Continuer →</button>
+      `;
+
+      content.querySelectorAll('.offer-option').forEach(el => {
+        el.addEventListener('click', () => {
+          selectedOffer = offers.find(o => o.id === el.dataset.id);
+          content.querySelectorAll('.offer-option').forEach(o => o.classList.remove('selected'));
+          el.classList.add('selected');
+        });
+      });
+
+      document.getElementById('offer-continue').addEventListener('click', () => {
+        if (!selectedOffer) return;
+        openPaymentStep(product);
+      });
+    }
+
+    function openPaymentStep(product) {
       content.innerHTML = `
         <h3>${esc(product.name)}</h3>
-        <p class="checkout-price">€${Number(product.price).toFixed(2)} — ${esc(product.duration)}</p>
+        <p class="checkout-price">${esc(selectedOffer.label)} — <strong style="color:var(--accent);">€${fmt(selectedOffer.price)}</strong></p>
         <label class="checkout-label">Email (pour recevoir ta clé d'accès)</label>
         <input type="email" id="checkout-email" class="checkout-input" placeholder="ton@email.com" required />
         <div class="checkout-methods">
@@ -686,12 +861,12 @@
           <button class="method-btn" id="pay-ltc">Litecoin (LTC)</button>
         </div>
         <p id="checkout-error" class="checkout-error"></p>
+        <button class="btn-secondary" id="back-to-offers" style="width:100%; margin-top:0.75rem; text-align:center; cursor:pointer; background:none;">← Changer d'offre</button>
       `;
 
       document.getElementById('pay-ltc').addEventListener('click', () => startLtcPayment(product));
       document.getElementById('pay-paypal').addEventListener('click', () => startPaypalPayment(product));
-
-      overlay.classList.add('open');
+      document.getElementById('back-to-offers').addEventListener('click', () => renderOfferStep(product, sortedOffers(product)));
     }
 
     function getEmailOrError() {
@@ -717,7 +892,7 @@
         const res = await fetch(`${API_BASE}/payments/create-order`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id, email }),
+          body: JSON.stringify({ productId: product.id, email, duration: selectedOffer.id }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erreur PayPal.');
@@ -770,7 +945,7 @@
         const res = await fetch(`${API_BASE}/payments/create-order-ltc`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productId: product.id, email }),
+          body: JSON.stringify({ productId: product.id, email, duration: selectedOffer.id }),
         });
         order = await res.json();
         if (!res.ok) throw new Error(order.error || 'Erreur lors de la création de la commande LTC.');

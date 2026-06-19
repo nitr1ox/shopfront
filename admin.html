@@ -864,6 +864,62 @@
     }
     .logo-row { display: flex; align-items: center; gap: 0.75rem; }
 
+    /* ── LOGO dropzone ── */
+    .logo-dropzone {
+      border: 1.5px dashed var(--border2);
+      border-radius: 8px;
+      padding: 1rem;
+      background: var(--surface2);
+      transition: border-color 0.15s, background 0.15s;
+      cursor: pointer;
+    }
+    .logo-dropzone:hover { border-color: var(--muted); }
+    .logo-dropzone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+    }
+    .logo-dropzone-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 90px;
+    }
+    .logo-dropzone-preview .logo-preview {
+      width: 90px;
+      height: 90px;
+      border-radius: 8px;
+    }
+    .logo-dropzone-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .logo-dropzone-placeholder small { color: var(--muted2); }
+    .logo-dropzone-icon {
+      font-size: 1.4rem;
+      color: var(--muted);
+    }
+    .logo-dropzone-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 0.6rem;
+      min-height: 1.2rem;
+    }
+    .logo-upload-status {
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+    }
+    .logo-upload-status.success { color: var(--green); }
+    .logo-upload-status.error { color: var(--accent); }
+
     /* ── TABLE col updates ── */
     .td-logo { width: 40px; }
     .td-logo img { width:32px; height:32px; border-radius:4px; object-fit:contain; }
@@ -1055,11 +1111,22 @@
 
         <!-- LOGO -->
         <div class="form-group">
-          <label>Logo (URL)</label>
-          <div class="logo-row">
-            <input type="text" id="f-logo" placeholder="https://..." oninput="previewLogo(this.value)" style="flex:1;" />
-            <img id="logo-preview-img" class="logo-preview" src="" alt="logo" />
+          <label>Image du produit</label>
+          <div class="logo-dropzone" id="logo-dropzone">
+            <input type="file" id="f-logo-file" accept="image/png,image/jpeg,image/webp,image/gif" hidden />
+            <div class="logo-dropzone-preview" id="logo-dropzone-preview">
+              <img id="logo-preview-img" class="logo-preview" src="" alt="logo" />
+              <div class="logo-dropzone-placeholder" id="logo-dropzone-placeholder">
+                <span class="logo-dropzone-icon">⇪</span>
+                <span>Glisse une image ici<br /><small>ou clique pour parcourir</small></span>
+              </div>
+            </div>
+            <div class="logo-dropzone-meta">
+              <span id="logo-upload-status" class="logo-upload-status"></span>
+              <button type="button" class="btn btn-ghost btn-sm" id="logo-remove-btn" style="display:none;" onclick="removeLogo(event)">Retirer</button>
+            </div>
           </div>
+          <input type="hidden" id="f-logo" value="" />
         </div>
 
         <!-- DURÉES & PRIX -->
@@ -1460,9 +1527,101 @@
 
     function previewLogo(url) {
       const img = document.getElementById('logo-preview-img');
-      if (url) { img.src = url; img.style.display = 'block'; }
-      else      { img.style.display = 'none'; }
+      const placeholder = document.getElementById('logo-dropzone-placeholder');
+      const removeBtn = document.getElementById('logo-remove-btn');
+      if (url) {
+        img.src = url;
+        img.style.display = 'block';
+        placeholder.style.display = 'none';
+        removeBtn.style.display = 'inline-block';
+      } else {
+        img.style.display = 'none';
+        img.src = '';
+        placeholder.style.display = 'flex';
+        removeBtn.style.display = 'none';
+      }
     }
+
+    function setLogoStatus(msg, type) {
+      const el = document.getElementById('logo-upload-status');
+      el.textContent = msg || '';
+      el.className = 'logo-upload-status' + (type ? ' ' + type : '');
+    }
+
+    function removeLogo(e) {
+      e.stopPropagation();
+      document.getElementById('f-logo').value = '';
+      document.getElementById('f-logo-file').value = '';
+      previewLogo('');
+      setLogoStatus('');
+    }
+
+    async function uploadLogoFile(file) {
+      if (!file) return;
+      if (!file.type.startsWith('image/')) {
+        setLogoStatus('Format non supporté.', 'error');
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setLogoStatus('Image trop lourde (max 5 Mo).', 'error');
+        return;
+      }
+
+      // Aperçu immédiat (local) pendant l'upload
+      const localUrl = URL.createObjectURL(file);
+      previewLogo(localUrl);
+      setLogoStatus('Envoi en cours…');
+
+      try {
+        const formData = new FormData();
+        formData.append('image', file);
+        const res = await fetch(`${API}/products/upload-image`, {
+          method: 'POST',
+          headers: { 'Authorization': authHeaders().Authorization },
+          body: formData,
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Erreur lors de l'upload.");
+
+        document.getElementById('f-logo').value = data.url;
+        previewLogo(data.url);
+        setLogoStatus('Image envoyée ✓', 'success');
+      } catch (err) {
+        setLogoStatus(err.message || "Erreur lors de l'upload.", 'error');
+      }
+    }
+
+    (function initLogoDropzone() {
+      const zone = document.getElementById('logo-dropzone');
+      const fileInput = document.getElementById('f-logo-file');
+
+      zone.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', () => {
+        if (fileInput.files && fileInput.files[0]) uploadLogoFile(fileInput.files[0]);
+      });
+
+      ['dragenter', 'dragover'].forEach(evt => {
+        zone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(evt => {
+        zone.addEventListener(evt, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.remove('dragover');
+        });
+      });
+
+      zone.addEventListener('drop', (e) => {
+        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) uploadLogoFile(file);
+      });
+    })();
 
     function openModal(id) {
       editingId = id || null;
@@ -1478,6 +1637,8 @@
         document.getElementById('f-name').value        = p.name;
         document.getElementById('f-description').value = p.description || '';
         document.getElementById('f-logo').value        = p.logo || '';
+        document.getElementById('f-logo-file').value    = '';
+        setLogoStatus('');
         document.getElementById('f-status').value      = p.status;
         document.getElementById('f-featured').checked  = p.featured;
         previewLogo(p.logo || '');
@@ -1493,6 +1654,8 @@
         document.getElementById('f-name').value        = '';
         document.getElementById('f-description').value = '';
         document.getElementById('f-logo').value        = '';
+        document.getElementById('f-logo-file').value    = '';
+        setLogoStatus('');
         document.getElementById('f-status').value      = 'active';
         document.getElementById('f-featured').checked  = false;
         previewLogo('');
