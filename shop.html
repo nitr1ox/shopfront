@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AK-47 — Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --accent: #e63c2f;
+      --accent2: #ff6b5e;
+      --text: #f0f0f0;
+      --muted: #666;
+      --card: #131313;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    .nav-cta {
+      background: var(--accent);
+      color: #fff !important;
+      padding: 0.5rem 1.2rem;
+      border-radius: 4px;
+    }
+
+    .nav-cta:hover { background: var(--accent2); color: #fff !important; }
+
+    
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(230,60,47,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid rgba(230,60,47,0.35);
+      padding: 0.35rem 0.9rem;
+      border-radius: 2px;
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .hero p {
+      max-width: 480px;
+      font-size: 1.05rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    .btn-secondary {
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.85rem 2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+    
+    .ticker {
+      background: var(--accent);
+      padding: 0.6rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-inner {
+      display: inline-flex;
+      gap: 3rem;
+      animation: ticker 18s linear infinite;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    
+    .section {
+      padding: 6rem 1.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .section-sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 3rem;
+    }
+
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+
+    .product-card:hover {
+      border-color: rgba(230,60,47,0.4);
+      transform: translateY(-3px);
+    }
+
+    .product-card.featured {
+      border-color: rgba(230,60,47,0.5);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.65rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+    }
+
+    .product-duration {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .product-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-price {
+      font-size: 2.2rem;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+
+    .product-price sup {
+      font-size: 1rem;
+      vertical-align: super;
+    }
+
+    .product-features {
+      list-style: none;
+      margin-bottom: 2rem;
+    }
+
+    .product-features li {
+      font-size: 0.875rem;
+      color: var(--muted);
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .product-features li:last-child { border-bottom: none; }
+
+    .product-features li::before {
+      content: '✓';
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 0.75rem;
+    }
+
+    .product-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      text-transform: uppercase;
+    }
+
+    .product-btn:hover, .product-card.featured .product-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    
+    footer {
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-family: 'Space Mono', monospace;
+      border-top: 1px solid var(--border);
+      letter-spacing: 0.05em;
+    }
+
+    footer span { color: var(--accent); }
+
+    
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .products-grid { grid-template-columns: 1fr; }
+    }
+
+    
+    .checkout-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .checkout-overlay.open { display: flex; }
+
+    .checkout-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.5rem 2rem 2rem;
+      max-width: 380px;
+      width: 100%;
+      position: relative;
+      text-align: center;
+    }
+
+    .checkout-close {
+      position: absolute;
+      top: 0.75rem; right: 0.75rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .checkout-close:hover { color: var(--text); }
+
+    .checkout-modal h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .checkout-price {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkout-label {
+      display: block;
+      text-align: left;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .checkout-input {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.7rem 0.85rem;
+      color: var(--text);
+      font-size: 0.9rem;
+      margin-bottom: 1.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .checkout-input:focus { outline: none; border-color: var(--accent); }
+
+    .checkout-methods {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .method-btn {
+      flex: 1;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.8rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .method-btn:hover { background: var(--accent); color: #fff; }
+
+    .checkout-error {
+      color: var(--accent2);
+      font-size: 0.8rem;
+      margin-top: 0.75rem;
+      min-height: 1em;
+    }
+
+    .checkout-status {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-top: 1rem;
+    }
+
+    .checkout-sub {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .checkout-qr {
+      width: 220px;
+      height: 220px;
+      border-radius: 6px;
+      margin: 0.5rem auto 1rem;
+      display: block;
+      background: #fff;
+      padding: 8px;
+    }
+
+    .checkout-amount {
+      font-family: 'Space Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .checkout-address-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.6rem 0.75rem;
+      margin-top: 0.75rem;
+    }
+
+    .checkout-address-box code {
+      flex: 1;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      word-break: break-all;
+      text-align: left;
+      color: var(--text);
+    }
+
+    .copy-btn {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 0.4rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .copy-btn:hover { background: var(--accent); }
+  </style>
+</head>
+<body>
+
+  
+  <nav>
+    <a class="nav-logo" href="#"><span>AK</span>-47</a>
+    <ul class="nav-links">
+      <li><a href="#products">Produits</a></li>
+      <li><a href="#products" class="nav-cta">Acheter</a></li>
+    </ul>
+  </nav>
+
+  
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span>Livraison instantanée</span>
+      <span>•</span>
+      <span>Support 24/7</span>
+      <span>•</span>
+      <span>Paiement sécurisé</span>
+      <span>•</span>
+      <span>Livraison instantanée</span>
+      <span>•</span>
+      <span>Support 24/7</span>
+      <span>•</span>
+      <span>Paiement sécurisé</span>
+      <span>•</span>
+      <span>Livraison instantanée</span>
+      <span>•</span>
+      <span>Support 24/7</span>
+      <span>•</span>
+      <span>Paiement sécurisé</span>
+      <span>•</span>
+    </div>
+  </div>
+
+  
+  <section class="hero">
+    <div class="hero-tag">Shop officiel</div>
+    <h1>Bienvenue sur<br /><em>AK-47</em></h1>
+    <p>Choisis ton offre, reçois ta commande instantanément. Simple, rapide, fiable.</p>
+    <div class="hero-btns">
+      <a href="#products" class="btn-primary">Voir les offres →</a>
+      <a href="#" class="btn-secondary">En savoir plus</a>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  
+  <section class="section" id="products">
+    <div class="section-label">Nos offres</div>
+    <h2 class="section-title">Choisis ton <em>plan</em></h2>
+    <p class="section-sub">Tous les plans incluent les mêmes fonctionnalités. Aucune surprise.</p>
+
+    <div class="products-grid" id="products-grid">
+      
+    </div>
+    <div id="shop-empty" style="display:none; text-align:center; padding:4rem 2rem; color:var(--muted);">
+      <p style="font-size:0.95rem;">Aucune offre disponible pour le moment.</p>
+    </div>
+  </section>
+
+  
+  <div id="checkout-overlay" class="checkout-overlay">
+    <div class="checkout-modal">
+      <button class="checkout-close" id="checkout-close">&times;</button>
+      <div id="checkout-content"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'http://localhost:3000/api';
+
+    function esc(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    let currentProducts = [];
+
+    async function fetchProducts() {
+      const res = await fetch(`${API_BASE}/products`);
+      if (!res.ok) throw new Error('Erreur lors du chargement des produits.');
+      return res.json();
+    }
+
+    async function renderShop() {
+      const grid = document.getElementById('products-grid');
+      const empty = document.getElementById('shop-empty');
+
+      try {
+        currentProducts = await fetchProducts();
+      } catch (err) {
+        console.error(err);
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        empty.querySelector('p').textContent = 'Impossible de charger les offres pour le moment.';
+        return;
+      }
+
+      if (currentProducts.length === 0) {
+        grid.style.display = 'none';
+        empty.style.display = 'block';
+        return;
+      }
+
+      grid.style.display = '';
+      empty.style.display = 'none';
+
+      grid.innerHTML = currentProducts.map(p => `
+        <div class="product-card ${p.featured ? 'featured' : ''}">
+          ${p.featured ? '<div class="product-badge">Populaire</div>' : ''}
+          <div class="product-duration">${esc(p.duration)}</div>
+          <div class="product-name">${esc(p.name)}</div>
+          <div class="product-price"><sup>€</sup>${Number(p.price).toFixed(2)}</div>
+          <ul class="product-features">
+            ${(p.features || []).map(f => f ? `<li>${esc(f)}</li>` : '').join('')}
+          </ul>
+          <button class="product-btn" data-id="${p.id}">Acheter</button>
+        </div>
+      `).join('');
+
+      grid.querySelectorAll('.product-btn').forEach(btn => {
+        btn.addEventListener('click', () => openCheckout(btn.dataset.id));
+      });
+    }
+
+    // ─── CHECKOUT ────────────────────────────────────────
+    const overlay = document.getElementById('checkout-overlay');
+    const content = document.getElementById('checkout-content');
+    let pollTimer = null;
+
+    function closeCheckout() {
+      overlay.classList.remove('open');
+      if (pollTimer) clearInterval(pollTimer);
+    }
+    document.getElementById('checkout-close').addEventListener('click', closeCheckout);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeCheckout(); });
+
+    function openCheckout(productId) {
+      const product = currentProducts.find(p => p.id === productId);
+      if (!product) return;
+      if (pollTimer) clearInterval(pollTimer);
+
+      content.innerHTML = `
+        <h3>${esc(product.name)}</h3>
+        <p class="checkout-price">€${Number(product.price).toFixed(2)} — ${esc(product.duration)}</p>
+        <label class="checkout-label">Email (pour recevoir ta clé d'accès)</label>
+        <input type="email" id="checkout-email" class="checkout-input" placeholder="ton@email.com" required />
+        <div class="checkout-methods">
+          <button class="method-btn" id="pay-paypal">PayPal</button>
+          <button class="method-btn" id="pay-ltc">Litecoin (LTC)</button>
+        </div>
+        <p id="checkout-error" class="checkout-error"></p>
+      `;
+
+      document.getElementById('pay-ltc').addEventListener('click', () => startLtcPayment(product));
+      document.getElementById('pay-paypal').addEventListener('click', () => startPaypalPayment(product));
+
+      overlay.classList.add('open');
+    }
+
+    function getEmailOrError() {
+      const emailInput = document.getElementById('checkout-email');
+      const errorEl = document.getElementById('checkout-error');
+      const email = emailInput.value.trim();
+      if (!email || !email.includes('@')) {
+        errorEl.textContent = 'Merci d\'entrer un email valide.';
+        return null;
+      }
+      errorEl.textContent = '';
+      return email;
+    }
+
+    // ─── PAIEMENT PAYPAL ─────────────────────────────────
+    async function startPaypalPayment(product) {
+      const email = getEmailOrError();
+      if (!email) return;
+
+      content.innerHTML = `<p class="checkout-status">Redirection vers PayPal…</p>`;
+
+      try {
+        const res = await fetch(`${API_BASE}/payments/create-order`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id, email }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur PayPal.');
+
+        // Ici tu peux soit rediriger vers l'URL d'approbation PayPal renvoyée par l'API,
+        // soit afficher les boutons PayPal JS SDK avec l'order id (data.id).
+        // Exemple simple : on affiche l'id en attendant l'intégration des boutons PayPal.
+        content.innerHTML = `
+          <p class="checkout-status">Commande PayPal créée (#${esc(data.id)}).</p>
+          <p class="checkout-sub">Intègre ici les boutons PayPal JS SDK pour finaliser l'approbation, puis appelle <code>/api/payments/capture-order/${esc(data.id)}</code>.</p>
+        `;
+      } catch (err) {
+        content.innerHTML = `<p class="checkout-error">${esc(err.message)}</p>`;
+      }
+    }
+
+    // ─── PAIEMENT LITECOIN ───────────────────────────────
+    async function startLtcPayment(product) {
+      const email = getEmailOrError();
+      if (!email) return;
+
+      content.innerHTML = `<p class="checkout-status">Création de la commande Litecoin…</p>`;
+
+      let order;
+      try {
+        const res = await fetch(`${API_BASE}/payments/create-order-ltc`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId: product.id, email }),
+        });
+        order = await res.json();
+        if (!res.ok) throw new Error(order.error || 'Erreur lors de la création de la commande LTC.');
+      } catch (err) {
+        content.innerHTML = `<p class="checkout-error">${esc(err.message)}</p>`;
+        return;
+      }
+
+      renderLtcOrder(order);
+      pollTimer = setInterval(() => checkLtcStatus(order.id), 8000);
+    }
+
+    function renderLtcOrder(order) {
+      const qrData = encodeURIComponent(`litecoin:${order.address}?amount=${order.amountLtc}`);
+      content.innerHTML = `
+        <h3>Paiement en Litecoin</h3>
+        <img class="checkout-qr" src="https:
+        <p class="checkout-amount">${order.amountLtc} LTC</p>
+        <p class="checkout-sub">≈ €${order.amountEur.toFixed(2)} (taux : 1 LTC = €${order.rate.toFixed(2)})</p>
+        <div class="checkout-address-box">
+          <code id="ltc-address">${esc(order.address)}</code>
+          <button class="copy-btn" id="copy-address">Copier</button>
+        </div>
+        <p id="ltc-status" class="checkout-status">⏳ En attente du paiement…</p>
+      `;
+
+      document.getElementById('copy-address').addEventListener('click', () => {
+        navigator.clipboard.writeText(order.address);
+        const btn = document.getElementById('copy-address');
+        btn.textContent = 'Copié ✓';
+        setTimeout(() => { btn.textContent = 'Copier'; }, 1500);
+      });
+    }
+
+    async function checkLtcStatus(orderId) {
+      const statusEl = document.getElementById('ltc-status');
+      try {
+        const res = await fetch(`${API_BASE}/payments/check-ltc/${orderId}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Erreur de vérification.');
+
+        if (data.status === 'paid') {
+          clearInterval(pollTimer);
+          content.innerHTML = `
+            <h3>Paiement confirmé ✓</h3>
+            <p class="checkout-sub">Ta clé d'accès a été envoyée par email${data.accessKey ? ' et est aussi affichée ci-dessous :' : '.'}</p>
+            ${data.accessKey ? `<div class="checkout-address-box"><code>${esc(data.accessKey)}</code></div>` : ''}
+          `;
+        } else if (data.status === 'pending_confirmation' && statusEl) {
+          statusEl.textContent = '🔄 Paiement détecté, en attente de confirmation blockchain…';
+        } else if (statusEl) {
+          statusEl.textContent = '⏳ En attente du paiement…';
+        }
+      } catch (err) {
+        if (statusEl) statusEl.textContent = `⚠️ ${err.message}`;
+      }
+    }
+
+    renderShop();
+  </script>
+
+  
+  <footer>
+    <span>AK-47</span> &nbsp;·&nbsp; Tous droits réservés &nbsp;·&nbsp; 2025
+  </footer>
+
+</body>
+</html>

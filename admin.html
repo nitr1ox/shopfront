@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AK-47 — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface2: #161616;
+      --border: #1e1e1e;
+      --border2: #252525;
+      --accent: #e63c2f;
+      --accent2: #ff6b5e;
+      --accent-dim: rgba(230,60,47,0.12);
+      --text: #f0f0f0;
+      --muted: #666;
+      --muted2: #444;
+      --card: #131313;
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.12);
+      --yellow: #eab308;
+      --yellow-dim: rgba(234,179,8,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+    }
+
+    
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 50;
+    }
+
+    .sidebar-logo {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-logo span { color: var(--accent); }
+
+    .sidebar-badge {
+      font-size: 0.6rem;
+      background: var(--accent);
+      color: #fff;
+      padding: 0.15rem 0.45rem;
+      border-radius: 2px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-left: auto;
+    }
+
+    .sidebar-nav {
+      padding: 1rem 0;
+      flex: 1;
+    }
+
+    .nav-section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted2);
+      padding: 0.5rem 1.25rem;
+      margin-top: 0.5rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.6rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 0.15s, background 0.15s;
+      border-left: 2px solid transparent;
+    }
+
+    .nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+
+    .nav-item.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+      background: var(--accent-dim);
+    }
+
+    .nav-item .icon {
+      width: 16px;
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted2);
+      font-family: 'Space Mono', monospace;
+    }
+
+    
+    .main {
+      margin-left: 220px;
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    
+    .topbar {
+      height: 60px;
+      background: rgba(10,10,10,0.95);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(12px);
+    }
+
+    .topbar-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .topbar-title span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .topbar-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .user-avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+    }
+
+    
+    .content {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    
+    .view { display: none; }
+    .view.active { display: block; }
+
+    
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      gap: 1rem;
+    }
+
+    .page-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.4rem;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .page-title em { font-style: normal; color: var(--accent); }
+
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: var(--text);
+    }
+
+    .stat-value.accent { color: var(--accent); }
+
+    .stat-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    
+    .table-wrap {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table-header-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .table-header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--surface2);
+    }
+
+    thead th {
+      text-align: left;
+      padding: 0.75rem 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 400;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    td {
+      padding: 1rem 1.5rem;
+      font-size: 0.875rem;
+      vertical-align: middle;
+    }
+
+    .td-name { font-weight: 600; }
+
+    .td-price {
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .td-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .badge-active { background: var(--green-dim); color: var(--green); }
+    .badge-hidden { background: var(--yellow-dim); color: var(--yellow); }
+    .badge-featured { background: var(--accent-dim); color: var(--accent); }
+
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 4px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: var(--accent2); }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border2);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover { border-color: var(--muted); color: var(--text); }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid rgba(230,60,47,0.3);
+      color: var(--accent);
+    }
+
+    .btn-danger:hover { background: var(--accent-dim); }
+
+    .btn-sm {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.75rem;
+    }
+
+    
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(12px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.15s;
+    }
+
+    .modal-close:hover { color: var(--text); border-color: var(--muted); }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+      padding: 0.7rem 0.9rem;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.875rem;
+      transition: border-color 0.15s;
+      outline: none;
+      appearance: none;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: rgba(230,60,47,0.5);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.9rem center;
+      padding-right: 2.5rem;
+    }
+
+    .features-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .feature-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .feature-row input { flex: 1; }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border2);
+      border-radius: 5px;
+    }
+
+    .toggle-label {
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .toggle {
+      position: relative;
+      width: 38px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .toggle input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--border2);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+
+    .toggle input:checked + .toggle-slider { background: var(--accent); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    
+    .confirm-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(230,60,47,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .confirm-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .confirm-text {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    
+    .toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.83rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      transform: translateX(120%);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-width: 220px;
+      max-width: 320px;
+    }
+
+    .toast.show { transform: translateX(0); }
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--accent); }
+
+    
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      opacity: 0.4;
+    }
+
+    .empty-state p {
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    
+    .preview-section {
+      margin-top: 2rem;
+    }
+
+    .preview-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .preview-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.75rem;
+      position: relative;
+    }
+
+    .preview-card.featured { border-color: rgba(230,60,47,0.4); }
+
+    .pc-badge {
+      position: absolute;
+      top: 0.9rem; right: 0.9rem;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.6rem;
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+    }
+
+    .pc-duration {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .pc-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .pc-price {
+      font-size: 1.9rem;
+      font-weight: 700;
+      font-family: 'Space Mono', monospace;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .pc-price sup { font-size: 0.85rem; vertical-align: super; }
+
+    .pc-features {
+      list-style: none;
+      margin-bottom: 1.25rem;
+    }
+
+    .pc-features li {
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 0.3rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pc-features li:last-child { border-bottom: none; }
+    .pc-features li::before { content: '✓'; color: var(--accent); font-size: 0.7rem; font-weight: 700; }
+
+    .pc-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 0.65rem;
+      border-radius: 4px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: default;
+    }
+
+    .preview-card.featured .pc-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  
+  <aside class="sidebar">
+    <a class="sidebar-logo" href="#">
+      <span>AK</span>-47 <div class="sidebar-badge">Admin</div>
+    </a>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Gestion</div>
+      <div class="nav-item active" data-view="products" onclick="switchView('products', this)">
+        <span class="icon">⬡</span> Produits
+      </div>
+      <div class="nav-item" data-view="preview" onclick="switchView('preview', this)">
+        <span class="icon">◎</span> Aperçu shop
+      </div>
+    </nav>
+    <div class="sidebar-footer">nitrox · ak-47.fr</div>
+  </aside>
+
+  
+  <div class="main">
+
+    
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Produits <span>/ Gérer les offres</span></div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <div class="user-avatar">N</div>
+          nitrox
+        </div>
+      </div>
+    </header>
+
+    
+    <div class="content">
+
+      
+      <div class="view active" id="view-products">
+        <div class="page-header">
+          <div>
+            <div class="page-label">Catalogue</div>
+            <h1 class="page-title">Mes <em>produits</em></h1>
+          </div>
+          <button class="btn btn-primary" onclick="openModal()">+ Nouveau produit</button>
+        </div>
+
+        
+        <div class="stats-grid" id="stats-grid">
+          
+        </div>
+
+        
+        <div class="table-wrap">
+          <div class="table-header">
+            <div class="table-header-title">Tous les produits</div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Durée</th>
+                <th>Statut</th>
+                <th>Featured</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="products-tbody">
+              
+            </tbody>
+          </table>
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <div class="empty-icon">⬡</div>
+            <p>Aucun produit pour l'instant.</p>
+            <button class="btn btn-primary" onclick="openModal()">+ Créer un produit</button>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="view" id="view-preview">
+        <div class="page-header">
+          <div>
+            <div class="page-label">Rendu final</div>
+            <h1 class="page-title">Aperçu <em>shop</em></h1>
+          </div>
+        </div>
+        <div class="preview-section">
+          <div class="preview-label">— Rendu des cartes telles qu'elles apparaissent sur le shop</div>
+          <div class="preview-grid" id="preview-grid">
+            
+          </div>
+          <div id="preview-empty" class="empty-state" style="display:none;">
+            <div class="empty-icon">◎</div>
+            <p>Crée des produits pour voir l'aperçu.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modal-title">Nouveau produit</div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nom</label>
+            <input type="text" id="f-name" placeholder="ex: 1 Mois" />
+          </div>
+          <div class="form-group">
+            <label>Durée</label>
+            <input type="text" id="f-duration" placeholder="ex: 30 jours" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Prix (€)</label>
+            <input type="number" id="f-price" placeholder="0.00" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Statut</label>
+            <select id="f-status">
+              <option value="active">Actif</option>
+              <option value="hidden">Masqué</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fonctionnalités</label>
+          <div class="features-list" id="features-list">
+            
+          </div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:0.5rem;" onclick="addFeatureRow()">+ Ajouter</button>
+        </div>
+
+        <div class="form-group">
+          <div class="toggle-row">
+            <span class="toggle-label">Mise en avant <span style="color:var(--muted);font-size:0.75rem;">(badge Populaire)</span></span>
+            <label class="toggle">
+              <input type="checkbox" id="f-featured" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+        <button class="btn btn-primary" id="modal-save-btn" onclick="saveProduct()">Créer</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="modal-overlay" id="confirm-overlay" onclick="closeConfirmOnOverlay(event)">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-body" style="padding-top:2rem;">
+        <div class="confirm-icon">🗑</div>
+        <div class="confirm-title">Supprimer ce produit ?</div>
+        <p class="confirm-text">Cette action est irréversible. Le produit sera retiré du catalogue.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" onclick="closeConfirm()">Annuler</button>
+        <button class="btn btn-danger" onclick="confirmDelete()">Supprimer</button>
+      </div>
+    </div>
+  </div>
+
+  
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    
+    let products = JSON.parse(localStorage.getItem('ak47_products') || '[]');
+    let editingId = null;
+    let deleteId = null;
+
+    function save() {
+      localStorage.setItem('ak47_products', JSON.stringify(products));
+    }
+
+    function genId() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    
+    const topbarTitles = {
+      products: 'Produits <span>/ Gérer les offres</span>',
+      preview: 'Aperçu <span>/ Rendu shop</span>',
+    };
+
+    function switchView(id, el) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById('view-' + id).classList.add('active');
+      el.classList.add('active');
+      document.getElementById('topbar-title').innerHTML = topbarTitles[id];
+      if (id === 'preview') renderPreview();
+    }
+
+    
+    function renderTable() {
+      const tbody = document.getElementById('products-tbody');
+      const empty = document.getElementById('empty-state');
+      const stats = document.getElementById('stats-grid');
+
+      if (products.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+      } else {
+        empty.style.display = 'none';
+        tbody.innerHTML = products.map(p => `
+          <tr>
+            <td class="td-name">${esc(p.name)}</td>
+            <td class="td-price"><sup>€</sup>${Number(p.price).toFixed(2)}</td>
+            <td style="color:var(--muted);font-size:0.82rem;">${esc(p.duration)}</td>
+            <td>
+              <span class="badge ${p.status === 'active' ? 'badge-active' : 'badge-hidden'}">
+                ${p.status === 'active' ? '● Actif' : '○ Masqué'}
+              </span>
+            </td>
+            <td>
+              ${p.featured ? '<span class="badge badge-featured">⚡ Featured</span>' : '<span style="color:var(--muted2);font-size:0.75rem;">—</span>'}
+            </td>
+            <td>
+              <div class="td-actions">
+                <button class="btn btn-ghost btn-sm" onclick="openModal('${p.id}')">Éditer</button>
+                <button class="btn btn-danger btn-sm" onclick="openConfirm('${p.id}')">✕</button>
+              </div>
+            </td>
+          </tr>
+        `).join('');
+      }
+
+      const total = products.reduce((a, p) => a + Number(p.price), 0);
+      const active = products.filter(p => p.status === 'active').length;
+      stats.innerHTML = `
+        <div class="stat-card">
+          <div class="stat-label">Total produits</div>
+          <div class="stat-value">${products.length}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Actifs</div>
+          <div class="stat-value accent">${active}</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Valeur catalogue</div>
+          <div class="stat-value">€${total.toFixed(2)}</div>
+          <div class="stat-sub">somme des prix</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Featured</div>
+          <div class="stat-value">${products.filter(p => p.featured).length}</div>
+        </div>
+      `;
+    }
+
+    
+    function renderPreview() {
+      const grid = document.getElementById('preview-grid');
+      const empty = document.getElementById('preview-empty');
+      const visible = products.filter(p => p.status === 'active');
+
+      if (visible.length === 0) {
+        grid.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+
+      empty.style.display = 'none';
+      grid.innerHTML = visible.map(p => `
+        <div class="preview-card ${p.featured ? 'featured' : ''}">
+          ${p.featured ? '<div class="pc-badge">Populaire</div>' : ''}
+          <div class="pc-duration">${esc(p.duration)}</div>
+          <div class="pc-name">${esc(p.name)}</div>
+          <div class="pc-price"><sup>€</sup>${Number(p.price).toFixed(2)}</div>
+          <ul class="pc-features">
+            ${(p.features || []).map(f => f ? `<li>${esc(f)}</li>` : '').join('')}
+          </ul>
+          <button class="pc-btn">Acheter</button>
+        </div>
+      `).join('');
+    }
+
+    
+    function openModal(id) {
+      editingId = id || null;
+      const overlay = document.getElementById('modal-overlay');
+      const title = document.getElementById('modal-title');
+      const saveBtn = document.getElementById('modal-save-btn');
+
+      if (id) {
+        const p = products.find(x => x.id === id);
+        if (!p) return;
+        title.textContent = 'Modifier le produit';
+        saveBtn.textContent = 'Enregistrer';
+        document.getElementById('f-name').value = p.name;
+        document.getElementById('f-duration').value = p.duration;
+        document.getElementById('f-price').value = p.price;
+        document.getElementById('f-status').value = p.status;
+        document.getElementById('f-featured').checked = p.featured;
+        buildFeatureRows(p.features || []);
+      } else {
+        title.textContent = 'Nouveau produit';
+        saveBtn.textContent = 'Créer';
+        document.getElementById('f-name').value = '';
+        document.getElementById('f-duration').value = '';
+        document.getElementById('f-price').value = '';
+        document.getElementById('f-status').value = 'active';
+        document.getElementById('f-featured').checked = false;
+        buildFeatureRows(['', '', '']);
+      }
+
+      overlay.classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      editingId = null;
+    }
+
+    function closeModalOnOverlay(e) {
+      if (e.target === document.getElementById('modal-overlay')) closeModal();
+    }
+
+    function buildFeatureRows(features) {
+      const list = document.getElementById('features-list');
+      list.innerHTML = '';
+      features.forEach(f => addFeatureRow(f));
+    }
+
+    function addFeatureRow(value = '') {
+      const list = document.getElementById('features-list');
+      const row = document.createElement('div');
+      row.className = 'feature-row';
+      row.innerHTML = `
+        <input type="text" placeholder="ex: Accès complet" value="${esc(value)}" />
+        <button class="btn btn-ghost btn-sm" onclick="this.parentElement.remove()" title="Retirer">✕</button>
+      `;
+      list.appendChild(row);
+    }
+
+    function getFeatures() {
+      return Array.from(document.querySelectorAll('#features-list .feature-row input'))
+        .map(i => i.value.trim())
+        .filter(Boolean);
+    }
+
+    function saveProduct() {
+      const name = document.getElementById('f-name').value.trim();
+      const price = document.getElementById('f-price').value;
+      const duration = document.getElementById('f-duration').value.trim();
+      const status = document.getElementById('f-status').value;
+      const featured = document.getElementById('f-featured').checked;
+      const features = getFeatures();
+
+      if (!name || price === '') {
+        toast('Nom et prix requis.', 'error');
+        return;
+      }
+
+      if (editingId) {
+        const idx = products.findIndex(p => p.id === editingId);
+        if (idx !== -1) {
+          products[idx] = { ...products[idx], name, price: Number(price), duration, status, featured, features };
+        }
+        toast('Produit mis à jour ✓', 'success');
+      } else {
+        products.push({ id: genId(), name, price: Number(price), duration, status, featured, features });
+        toast('Produit créé ✓', 'success');
+      }
+
+      save();
+      renderTable();
+      closeModal();
+    }
+
+    
+    function openConfirm(id) {
+      deleteId = id;
+      document.getElementById('confirm-overlay').classList.add('open');
+    }
+
+    function closeConfirm() {
+      document.getElementById('confirm-overlay').classList.remove('open');
+      deleteId = null;
+    }
+
+    function closeConfirmOnOverlay(e) {
+      if (e.target === document.getElementById('confirm-overlay')) closeConfirm();
+    }
+
+    function confirmDelete() {
+      products = products.filter(p => p.id !== deleteId);
+      save();
+      renderTable();
+      closeConfirm();
+      toast('Produit supprimé.', 'error');
+    }
+
+    
+    function toast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.innerHTML = (type === 'success' ? '✓' : '✕') + ' ' + msg;
+      c.appendChild(t);
+      requestAnimationFrame(() => { requestAnimationFrame(() => t.classList.add('show')); });
+      setTimeout(() => {
+        t.classList.remove('show');
+        setTimeout(() => t.remove(), 300);
+      }, 2800);
+    }
+
+    
+    function esc(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ─── INIT ─────────────────────────────────────────────────────
+    renderTable();
+  </script>
+</body>
+</html>
